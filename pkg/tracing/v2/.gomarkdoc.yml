@@ -1,0 +1,10 @@
+output: "{{.Dir}}/README.md"
+
+header: |+
+  [![pipeline status](https://github.com/jkrus/master_api/app/pkg/tracing/badges/develop/pipeline.svg)](https://github.com/jkrus/master_api/app/pkg/tracing/-/commits/develop)
+  [![coverage report](https://github.com/jkrus/master_api/app/pkg/tracing/badges/develop/coverage.svg)](http://go-modules.pages.gitlab.sigma-it.ru/tracing/coverage.html)
+
+repository:
+  url: https://github.com/jkrus/master_api/app/pkg/tracing
+  defaultBranch: develop
+  path: /
