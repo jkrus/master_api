@@ -1,0 +1,39 @@
+[prune]
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  name = "go.etcd.io/etcd"
+  version = "3.4.3"
+
+# WARNING! DON'T REMOVE IT!
+#
+# Lock the transitive dependency of the go.etcd.io/etcd@3.4.3
+# due to backward-incompatible changes in v1.27.0 of it.
+#
+# We should use "constraint" instead "override"
+# because the latter doesn't work inside children projects.
+#
+[[constraint]]
+  name = "google.golang.org/grpc"
+  version = "=1.26.0"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.1"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "go.uber.org/zap"
+  version = "1.10.0"
+
+[[constraint]]
+  name = "github.com/kelseyhightower/envconfig"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/go-playground/validator"
+  version = "10.0.1"
