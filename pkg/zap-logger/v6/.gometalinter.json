@@ -1,0 +1,7 @@
+{
+  "Vendor": true,
+  "Test": true,
+  "EnableAll": true,
+  "Disable": ["dupl", "gochecknoglobals", "maligned", "gocyclo"],
+  "LineLength": 100
+}

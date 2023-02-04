@@ -1,0 +1,4 @@
+# Очистить все кеш
+GET http://localhost:8080/api/ping?message=ping
+Content-Type: application/json
+###
