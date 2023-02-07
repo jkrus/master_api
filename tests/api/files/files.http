@@ -1,0 +1,7 @@
+GET http://localhost:8080/api/file/download?id=3&uuid=5dd10518-a5f2-11ed-ba24-5405db6db61d
+Accept: application/json
+
+###
+
+DELETE http://localhost:8080/api/file/delete?id=3&uuid=5dd10518-a5f2-11ed-ba24-5405db6db61d
+Accept: application/json

@@ -8,6 +8,7 @@ import (
 
 	"github.com/jkrus/master_api/internal/bl"
 	"github.com/jkrus/master_api/internal/io/http/middlewares"
+	"github.com/jkrus/master_api/internal/io/http/routes/files_controller"
 	"github.com/jkrus/master_api/internal/io/http/routes/ping_controller"
 )
 
@@ -29,6 +30,7 @@ func InitRoutes(logger *zap.Logger, bl *bl.BL) http.Handler {
 		r.middlewares.GetObservabilityMiddleware(logger),
 	)
 	r.initPingRoutes(ping_controller.NewPingController(bl))
+	r.initFileRoutes(files_controller.NewFileController(logger, bl))
 
 	return r.router
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/jkrus/master_api/internal/config"
+	"github.com/jkrus/master_api/internal/stores/minio"
 	"github.com/jkrus/master_api/pkg/errors"
 	zaplogger "github.com/jkrus/master_api/pkg/zap-logger/v6"
 
@@ -28,8 +29,16 @@ func main() {
 		return
 	}
 
+	// MinIO
+	minioClient, err := minio.NewClient(settings)
+	if err != nil {
+		logger.Error("can't create MinIO client", zaplogger.ExtractErrCtx(errors.Ctx().Loc(2).Just(err))...)
+		return
+	}
+	minioRepo := minio.NewMinioRepo(logger, minioClient)
+
 	// create DI & BL
-	di := internal.NewDI(logger)
+	di := internal.NewDI(logger, minioRepo)
 	bli := bl.NewBL(di)
 
 	finished := make(chan bool)

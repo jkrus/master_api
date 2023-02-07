@@ -11,6 +11,6 @@ type Logic struct {
 
 func NewPingLogic(di internal.IAppDeps) *Logic {
 	return &Logic{
-		Ping: ping.NewPings(di),
+		Ping: ping.NewPing(di),
 	}
 }

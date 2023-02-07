@@ -25,6 +25,11 @@ type Config struct {
 	CacheRequestTTL time.Duration `envconfig:"CACHE_REQUEST_TTL" default:"30m"`
 	// CacheResponseTTL - время жизни кэшируемого ответа
 	CacheResponseTTL time.Duration `envconfig:"CACHE_RESPONSE_TTL" default:"30m"`
+
+	/*----- MinIO -----*/
+	MinioEndPoint  string `envconfig:"MINIO_END_POINT" default:"172.18.0.2:9000"`
+	MinioAccessKey string `envconfig:"MINIO_ACCESS_KEY" default:"minio"`
+	MinioSecretKey string `envconfig:"MINIO_SECRET_KEY" default:"minio123"`
 }
 
 func (config Config) PayloadConfig() fields.PayloadConfig {
