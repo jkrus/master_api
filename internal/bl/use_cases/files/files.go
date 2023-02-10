@@ -30,7 +30,7 @@ func (f *files) Create(ctx context.Context, bucketName string, file *dto.FileIN)
 	if err != nil {
 		return "", errors.Ctx().Just(errors.Wrap(err, "failed to generate file uuid"))
 	}
-	file.UUID = uuid.String()
+	file.Uuid = uuid.String()
 
 	url, err := f.di.MinioRepo().Files.FileStore.UploadFile(ctx, bucketName, file)
 	if err != nil {
@@ -55,9 +55,9 @@ func (f *files) GetFile(ctx context.Context, bucketName, fileUUID string) (*dto.
 		return nil, errors.Ctx().Just(err)
 	}
 	res := &dto.FileOUT{
-		UUID:  objectInfo.Key,
+		Uuid:  objectInfo.Key,
 		Name:  objectInfo.UserMetadata["Name"],
-		Size:  objectInfo.Size,
+		Size:  uint(objectInfo.Size),
 		Bytes: buffer,
 	}
 	return res, nil

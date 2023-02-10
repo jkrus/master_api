@@ -5,15 +5,15 @@ import (
 )
 
 type FileIN struct {
-	UUID   string // UUID файла
+	Uuid   string // Uuid файла
 	Name   string // Имя файла
-	Size   int64  // Размер файла
+	Size   uint   // Размер файла
 	Reader io.Reader
 }
 
 type FileOUT struct {
-	UUID  string // UUID файла
+	Uuid  string // Uuid файла
 	Name  string // Имя файла
-	Size  int64  // Размер файла
+	Size  uint   // Размер файла
 	Bytes []byte // Данные файла
 }

@@ -39,7 +39,7 @@ func Hash(key string, options ...HashOption) zap.Field {
 
 	hash, err := uuid.NewRandomFromReader(config.randomSource)
 	if err != nil {
-		err = errors.WithMessage(err, "unable to create an UUID")
+		err = errors.WithMessage(err, "unable to create an Uuid")
 		return MarkedError(key, err)
 	}
 

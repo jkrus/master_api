@@ -9,7 +9,7 @@ import (
 type File struct {
 	UUID   string
 	Name   string // Имя файла
-	Size   int64  // Размер файла
+	Size   uint   // Размер файла
 	Reader io.Reader
 }
 
@@ -31,7 +31,7 @@ func (f *File) ToDTO() *dto.FileIN {
 	}
 
 	return &dto.FileIN{
-		UUID:   f.UUID,
+		Uuid:   f.UUID,
 		Name:   f.Name,
 		Size:   f.Size,
 		Reader: f.Reader,

@@ -30,6 +30,18 @@ type Config struct {
 	MinioEndPoint  string `envconfig:"MINIO_END_POINT" default:"172.18.0.2:9000"`
 	MinioAccessKey string `envconfig:"MINIO_ACCESS_KEY" default:"minio"`
 	MinioSecretKey string `envconfig:"MINIO_SECRET_KEY" default:"minio123"`
+
+	// DB
+
+	DBUser           string `envconfig:"DB_USER" default:"postgres"`
+	DBPass           string `envconfig:"DB_PASS" default:"postgres"`
+	DBHost           string `envconfig:"DB_HOST" default:"localhost"`
+	DBPort           string `envconfig:"DB_PORT" default:"5432"`
+	DBName           string `envconfig:"DB_NAME" default:"postgres"`
+	DBSSLMode        string `envconfig:"DB_SSL_MODE" default:"disable" validate:"oneof=disable enable"`
+	SQLSlowThreshold int    `envconfig:"SQL_SLOW_THRESHOLD" default:"600"`
+	TraceSQLCommands bool   `envconfig:"TRACE_SQL_COMMANDS" default:"false"`
+	AutoMigrate      bool   `envconfig:"AUTO_MIGRATE" default:"true"`
 }
 
 func (config Config) PayloadConfig() fields.PayloadConfig {

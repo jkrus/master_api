@@ -29,9 +29,9 @@ type filesRepo struct {
 }
 
 type File struct {
-	UUID string
+	UUID string // Uuid файла
 	Name string // Имя файла
-	Size int64  // Размер файла
+	Size uint   // Размер файла
 
 }
 
@@ -41,7 +41,7 @@ func (f *File) fromDTO(dtm *dto.FileIN) *File {
 	}
 
 	return &File{
-		UUID: dtm.UUID,
+		UUID: dtm.Uuid,
 		Name: dtm.Name,
 		Size: dtm.Size,
 	}
@@ -53,7 +53,7 @@ func (f *File) toDTO() *dto.FileIN {
 	}
 
 	return &dto.FileIN{
-		UUID: f.UUID,
+		Uuid: f.UUID,
 		Name: f.Name,
 		Size: f.Size,
 	}
@@ -87,7 +87,7 @@ func (f *filesRepo) UploadFile(ctx context.Context, bucketName string, file *dto
 	}
 
 	f.logger.Debug(fmt.Sprintf("put new object %s to bucket %s", file.Name, bucketName))
-	_, err := f.minio.PutObject(ctx, bucketName, file.UUID, file.Reader, file.Size,
+	_, err := f.minio.PutObject(ctx, bucketName, file.Uuid, file.Reader, int64(file.Size),
 		minio.PutObjectOptions{
 			UserMetadata: map[string]string{
 				"Name": file.Name,
@@ -98,7 +98,7 @@ func (f *filesRepo) UploadFile(ctx context.Context, bucketName string, file *dto
 		return "", errors.Wrap(err, "failed to upload file")
 	}
 
-	return f.generateFileURL(bucketName, file.UUID), nil
+	return f.generateFileURL(bucketName, file.Uuid), nil
 }
 
 func (f *filesRepo) DeleteFile(ctx context.Context, bucketName, fileUUID string) error {

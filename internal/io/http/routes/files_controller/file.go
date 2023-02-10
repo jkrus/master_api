@@ -36,7 +36,7 @@ func (f *FileController) Create(w http.ResponseWriter, r *http.Request) (interfa
 	fileReader, err := fileInfo.Open()
 	file := models.File{
 		Name:   fileInfo.Filename,
-		Size:   fileInfo.Size,
+		Size:   uint(fileInfo.Size),
 		Reader: fileReader,
 	}
 

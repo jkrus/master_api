@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/jkrus/master_api/internal/config"
+	"github.com/jkrus/master_api/internal/stores/db"
+	"github.com/jkrus/master_api/internal/stores/db/postgre"
 	"github.com/jkrus/master_api/internal/stores/minio"
 	"github.com/jkrus/master_api/pkg/errors"
 	zaplogger "github.com/jkrus/master_api/pkg/zap-logger/v6"
@@ -37,8 +39,16 @@ func main() {
 	}
 	minioRepo := minio.NewMinioRepo(logger, minioClient)
 
+	// Postgres DB
+	dbClient, err := postgre.OpenDBConnection(logger)
+	if err != nil {
+		logger.Error("can't create Postgres client", zaplogger.ExtractErrCtx(errors.Ctx().Loc(2).Just(err))...)
+		return
+	}
+	dbRepo := db.NewDBRepo(dbClient)
+
 	// create DI & BL
-	di := internal.NewDI(logger, minioRepo)
+	di := internal.NewDI(logger, minioRepo, dbRepo)
 	bli := bl.NewBL(di)
 
 	finished := make(chan bool)
