@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/jkrus/master_api/internal/stores/db"
+	"github.com/jkrus/master_api/internal/stores/hyper_ledger"
 	"github.com/jkrus/master_api/internal/stores/minio"
 )
 
@@ -11,20 +12,23 @@ import (
 type IAppDeps interface {
 	MinioRepo() *minio.MinioRepo
 	DBRepo() *db.DBRepo
+	HyperLagerStore() *hyper_ledger.FileContractRepo
 	Log() *zap.Logger
 }
 
 type di struct {
-	logger  *zap.Logger
-	minioDB *minio.MinioRepo
-	dbRepo  *db.DBRepo
+	logger          *zap.Logger
+	minioDB         *minio.MinioRepo
+	dbRepo          *db.DBRepo
+	hyperLagerStore *hyper_ledger.FileContractRepo
 }
 
-func NewDI(logger *zap.Logger, minioDB *minio.MinioRepo, dbRepo *db.DBRepo) IAppDeps {
+func NewDI(logger *zap.Logger, minioDB *minio.MinioRepo, dbRepo *db.DBRepo, hyperLagerStore *hyper_ledger.FileContractRepo) IAppDeps {
 	return &di{
-		logger:  logger,
-		minioDB: minioDB,
-		dbRepo:  dbRepo,
+		logger:          logger,
+		minioDB:         minioDB,
+		dbRepo:          dbRepo,
+		hyperLagerStore: hyperLagerStore,
 	}
 }
 
@@ -38,4 +42,8 @@ func (d di) MinioRepo() *minio.MinioRepo {
 
 func (d di) DBRepo() *db.DBRepo {
 	return d.dbRepo
+}
+
+func (d di) HyperLagerStore() *hyper_ledger.FileContractRepo {
+	return d.hyperLagerStore
 }

@@ -4,6 +4,8 @@ import (
 	"github.com/jkrus/master_api/internal/config"
 	"github.com/jkrus/master_api/internal/stores/db"
 	"github.com/jkrus/master_api/internal/stores/db/postgre"
+	"github.com/jkrus/master_api/internal/stores/hyper_ledger"
+	"github.com/jkrus/master_api/internal/stores/hyper_ledger/repo/files/chain_code"
 	"github.com/jkrus/master_api/internal/stores/minio"
 	"github.com/jkrus/master_api/pkg/errors"
 	zaplogger "github.com/jkrus/master_api/pkg/zap-logger/v6"
@@ -47,8 +49,17 @@ func main() {
 	}
 	dbRepo := db.NewDBRepo(dbClient)
 
+	// Hyper Lager Store
+	sc := hyper_ledger.NewFileContractRepo(logger)
+
+	err = chain_code.ChainCodeStart(sc.Files.FileStore)
+	if err != nil {
+		logger.Error("can't start chain code", zaplogger.ExtractErrCtx(errors.Ctx().Loc(2).Just(err))...)
+		return
+	}
+
 	// create DI & BL
-	di := internal.NewDI(logger, minioRepo, dbRepo)
+	di := internal.NewDI(logger, minioRepo, dbRepo, sc)
 	bli := bl.NewBL(di)
 
 	finished := make(chan bool)
