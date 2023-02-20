@@ -17,3 +17,11 @@ type FileOUT struct {
 	Size  uint   // Размер файла
 	Bytes []byte // Данные файла
 }
+
+type FileINHF struct {
+	Uuid         string
+	RedactorUuid string
+	Type         string
+	CheckSum     string
+	Status       int
+}

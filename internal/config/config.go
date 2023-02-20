@@ -42,6 +42,18 @@ type Config struct {
 	SQLSlowThreshold int    `envconfig:"SQL_SLOW_THRESHOLD" default:"600"`
 	TraceSQLCommands bool   `envconfig:"TRACE_SQL_COMMANDS" default:"false"`
 	AutoMigrate      bool   `envconfig:"AUTO_MIGRATE" default:"true"`
+
+	// Hyper Ledger
+
+	HFMSPID         string `envconfig:"HF_MSP_ID" default:"Org1MSP"`
+	HFCryptoPath    string `envconfig:"HF_CRYPTO_PATH" default:"internal/hf_certs/organizations/peerOrganizations/org1.example.com"`
+	HFCertPath      string `envconfig:"HF_CERT_PATH" default:"internal/hf_certs/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem"`
+	HFKeyPath       string `envconfig:"HF_KEY_PATH" default:"internal/hf_certs/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/"`
+	HFTLSCertPath   string `envconfig:"HF_TLS_CERT_PATH" default:"internal/hf_certs/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"`
+	HFPeerEndpoint  string `envconfig:"HF_PEER_ENDPOINT" default:"localhost:7051"`
+	HFGatewayPeer   string `envconfig:"HF_GATEWAY_PEER" default:"peer0.org1.example.com"`
+	HFChannelName   string `envconfig:"HF_CHANNEL_NAME" default:"mychannel"`
+	HFChaincodeName string `envconfig:"HF_CHAINCODE_NAME" default:"file"`
 }
 
 func (config Config) PayloadConfig() fields.PayloadConfig {

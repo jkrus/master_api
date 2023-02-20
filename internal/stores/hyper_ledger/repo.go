@@ -1,23 +1,21 @@
 package hyper_ledger
 
 import (
+	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"go.uber.org/zap"
 
+	"github.com/jkrus/master_api/internal/config"
 	"github.com/jkrus/master_api/internal/stores/hyper_ledger/repo/files/files_i"
 )
 
-// FileContractRepo - интерфейс работы смарт контрактом
-type FileContractRepo struct {
+// HFRepo - интерфейс работы смарт контрактами
+type HFRepo struct {
 	Files files_i.FileStoreI
 }
 
-// NewFileContractRepo - конструктор интерфейса работы со смарт контрактом
-func NewFileContractRepo(logger *zap.Logger) *FileContractRepo {
-	return &FileContractRepo{
-		Files: files_i.NewFileContract(logger),
+// NewHFRepo - конструктор интерфейса работы со смарт контрактами
+func NewHFRepo(config *config.Config, logger *zap.Logger, client *client.Network) *HFRepo {
+	return &HFRepo{
+		Files: files_i.NewFileContract(config, logger, client),
 	}
-}
-
-func (fcr *FileContractRepo) NewContext() {
-	fcr.Files.FileStore.
 }
