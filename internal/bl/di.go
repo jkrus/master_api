@@ -7,15 +7,13 @@ import (
 )
 
 type BL struct {
-	Ping            *ping_i.Logic
-	File            *files_i.Logic
-	FileStatusLogic *files_i.FileStatusLogic
+	Ping      *ping_i.Logic
+	FileLogic *files_i.Logic
 }
 
 func NewBL(di internal.IAppDeps) *BL {
 	return &BL{
-		Ping:            ping_i.NewPingLogic(di),
-		File:            files_i.NewFileLogic(di),
-		FileStatusLogic: files_i.NewFileStatusLogic(di),
+		Ping:      ping_i.NewPingLogic(di),
+		FileLogic: files_i.NewFileLogic(di),
 	}
 }

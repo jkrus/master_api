@@ -19,7 +19,7 @@ func (fc *FileController) CreateFileStatus(w http.ResponseWriter, r *http.Reques
 		return nil, err
 	}
 
-	result, err := fc.bl.FileStatusLogic.FileStatus.Create(r.Context(), data.ToDTO())
+	result, err := fc.bl.FileLogic.FileStatus.Create(r.Context(), data.ToDTO())
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (fc *FileController) GetFileStatusById(w http.ResponseWriter, r *http.Reque
 		return nil, errors.And(err, err_const.ErrBadRequest)
 	}
 
-	result, err := fc.bl.FileStatusLogic.FileStatus.GetById(r.Context(), fileStatusId)
+	result, err := fc.bl.FileLogic.FileStatus.GetById(r.Context(), fileStatusId)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (fc *FileController) UpdateFileStatus(w http.ResponseWriter, r *http.Reques
 		return nil, err
 	}
 
-	result, err := fc.bl.FileStatusLogic.FileStatus.Update(r.Context(), fileStatusId, data.ToDTO())
+	result, err := fc.bl.FileLogic.FileStatus.Update(r.Context(), fileStatusId, data.ToDTO())
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (fc *FileController) DeleteFileStatus(w http.ResponseWriter, r *http.Reques
 		return nil, errors.And(err, err_const.ErrBadRequest)
 	}
 
-	err = fc.bl.FileStatusLogic.FileStatus.Delete(r.Context(), fileStatusId)
+	err = fc.bl.FileLogic.FileStatus.Delete(r.Context(), fileStatusId)
 	if err != nil {
 		return nil, err
 	}

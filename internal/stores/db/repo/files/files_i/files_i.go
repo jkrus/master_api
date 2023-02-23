@@ -7,11 +7,15 @@ import (
 )
 
 type FilesDBStore struct {
-	FileRepository files.IFileRepository
+	FileRepository       files.IFileRepository
+	FileStatusRepository files.FileStatusRepositoryI
+	FileTypeRepository   files.FileTypeRepositoryI
 }
 
-func NewNotificationDBStore(dbHandler *gorm.DB, dbReader *gorm.DB) *FilesDBStore {
+func NewFilesDBStore(dbHandler *gorm.DB) *FilesDBStore {
 	return &FilesDBStore{
-		FileRepository: files.NewFileRepository(dbHandler),
+		FileRepository:       files.NewFileRepository(dbHandler),
+		FileStatusRepository: files.NewFileStatusRepository(dbHandler),
+		FileTypeRepository:   files.NewFileTypeRepository(dbHandler),
 	}
 }

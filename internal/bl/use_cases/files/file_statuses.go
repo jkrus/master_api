@@ -26,7 +26,7 @@ func NewFileStatusI(di internal.IAppDeps) FileStatusesI {
 }
 
 func (fs *fileStatus) Create(ctx context.Context, data *dto.FileStatus) (*dto.FileStatus, error) {
-	created, err := fs.di.DBRepo().FileStatusRepository.Create(ctx, data)
+	created, err := fs.di.DBRepo().FileRepository.FileStatusRepository.Create(ctx, data)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -35,7 +35,7 @@ func (fs *fileStatus) Create(ctx context.Context, data *dto.FileStatus) (*dto.Fi
 }
 
 func (fs *fileStatus) GetById(ctx context.Context, fileStatusId uint) (*dto.FileStatus, error) {
-	result, err := fs.di.DBRepo().FileStatusRepository.GetById(ctx, fileStatusId)
+	result, err := fs.di.DBRepo().FileRepository.FileStatusRepository.GetById(ctx, fileStatusId)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -44,7 +44,7 @@ func (fs *fileStatus) GetById(ctx context.Context, fileStatusId uint) (*dto.File
 }
 
 func (fs *fileStatus) Update(ctx context.Context, fileStatusId uint, data *dto.FileStatus) (*dto.FileStatus, error) {
-	updated, err := fs.di.DBRepo().FileStatusRepository.Update(ctx, fileStatusId, data)
+	updated, err := fs.di.DBRepo().FileRepository.FileStatusRepository.Update(ctx, fileStatusId, data)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -53,5 +53,5 @@ func (fs *fileStatus) Update(ctx context.Context, fileStatusId uint, data *dto.F
 }
 
 func (fs *fileStatus) Delete(ctx context.Context, fileStatusId uint) error {
-	return fs.di.DBRepo().FileStatusRepository.Delete(ctx, fileStatusId)
+	return fs.di.DBRepo().FileRepository.FileStatusRepository.Delete(ctx, fileStatusId)
 }

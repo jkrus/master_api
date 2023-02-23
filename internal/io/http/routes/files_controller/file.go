@@ -40,7 +40,7 @@ func (fc *FileController) Create(w http.ResponseWriter, r *http.Request) (interf
 		Reader: fileReader,
 	}
 
-	url, err := fc.bl.File.File.Create(r.Context(), orgIDString, file.ToDTO())
+	url, err := fc.bl.FileLogic.File.Create(r.Context(), orgIDString, file.ToDTO())
 	if err != nil {
 		return "", err
 	}
@@ -68,7 +68,7 @@ func (fc *FileController) GetFile(w http.ResponseWriter, r *http.Request) ([]byt
 	if err != nil {
 		return nil, "", errors.And(err, err_const.ErrBadRequest)
 	}
-	res, err := fc.bl.File.File.GetFile(r.Context(), orgIDString, fileUUID)
+	res, err := fc.bl.FileLogic.File.GetFile(r.Context(), orgIDString, fileUUID)
 	if err != nil {
 		return nil, "", err
 	}
@@ -93,7 +93,7 @@ func (fc *FileController) DeleteFile(w http.ResponseWriter, r *http.Request) (in
 		return nil, errors.And(err, err_const.ErrBadRequest)
 	}
 
-	err = fc.bl.File.File.Delete(r.Context(), orgIDString, fileUUID)
+	err = fc.bl.FileLogic.File.Delete(r.Context(), orgIDString, fileUUID)
 	if err != nil {
 		return nil, err
 	}

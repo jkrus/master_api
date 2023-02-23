@@ -6,11 +6,15 @@ import (
 )
 
 type Logic struct {
-	File files.FilesI
+	File       files.FilesI
+	FileStatus files.FileStatusesI
+	FileType   files.FileTypesI
 }
 
 func NewFileLogic(di internal.IAppDeps) *Logic {
 	return &Logic{
-		File: files.NewFilesI(di),
+		File:       files.NewFilesI(di),
+		FileStatus: files.NewFileStatusI(di),
+		FileType:   files.NewFileTypeI(di),
 	}
 }
