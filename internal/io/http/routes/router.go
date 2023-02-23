@@ -10,6 +10,7 @@ import (
 	"github.com/jkrus/master_api/internal/io/http/middlewares"
 	"github.com/jkrus/master_api/internal/io/http/routes/files_controller"
 	"github.com/jkrus/master_api/internal/io/http/routes/ping_controller"
+	"github.com/jkrus/master_api/internal/io/http/routes/users_controller"
 )
 
 type router struct {
@@ -31,6 +32,7 @@ func InitRoutes(logger *zap.Logger, bl *bl.BL) http.Handler {
 	)
 	r.initPingRoutes(ping_controller.NewPingController(bl))
 	r.initFileRoutes(files_controller.NewFileController(logger, bl))
+	r.initUsersRoutes(users_controller.NewUserController(logger, bl))
 
 	return r.router
 }

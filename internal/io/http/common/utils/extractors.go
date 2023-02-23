@@ -70,7 +70,7 @@ func ExtractUUIDFromParamsRequest(r *http.Request) (string, error) {
 // ExtractUUIDFromRequest - извлекает uuid string из запроса
 func ExtractUUIDFromRequest(r *http.Request) (string, error) {
 	if uid, ok := mux.Vars(r)["uuid"]; ok {
-		id, err := uuid.FromBytes([]byte(uid))
+		id, err := uuid.Parse(uid)
 		if err != nil {
 			return "", errors.Ctx().Str("uuid-str", uid).New(ErrParseUUIDFromRequest)
 		}

@@ -1,0 +1,33 @@
+// Создать пользователя
+POST http://localhost:8080/api/users
+Accept: application/json
+
+{
+"PublicKey":"PublicKey1",
+"Role": "Role1",
+"Status":"Status1"
+}
+
+###
+
+// Получить пользователя по Uuid
+GET http://localhost:8080/api/users/e77afacb-22aa-4942-86ea-013a8ceaa3a0
+Accept: application/json
+
+###
+
+// Обновить пользователя по Uuid
+PUT http://localhost:8080/api/users/e77afacb-22aa-4942-86ea-013a8ceaa3a0
+Accept: application/json
+
+{
+"PublicKey":"PublicKey1_updated",
+"Role": "Role1_updated",
+"Status":"Status1_updated"
+}
+
+###
+
+// Удалить пользователя по Uuid
+DELETE http://localhost:8080/api/users/e77afacb-22aa-4942-86ea-013a8ceaa3a0
+Accept: application/json

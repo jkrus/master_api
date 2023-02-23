@@ -7,12 +7,15 @@ import (
 
 	"github.com/jkrus/master_api/internal/stores/db/repo/files"
 	"github.com/jkrus/master_api/internal/stores/db/repo/files/files_i"
+	"github.com/jkrus/master_api/internal/stores/db/repo/users"
+	"github.com/jkrus/master_api/internal/stores/db/repo/users/users_i"
 )
 
 // DBRepo - интерфейс работы с базой данных
 type DBRepo struct {
 	DB             *gorm.DB
 	FileRepository *files_i.FilesDBStore
+	UserRepository *users_i.UsersDBStore
 }
 
 // NewDBRepo - конструктор интерфейса работы с базой данных
@@ -20,6 +23,7 @@ func NewDBRepo(dbHandler *gorm.DB) *DBRepo {
 	return &DBRepo{
 		DB:             dbHandler,
 		FileRepository: files_i.NewFilesDBStore(dbHandler),
+		UserRepository: users_i.NewUsersDBStore(dbHandler),
 	}
 }
 
@@ -29,6 +33,7 @@ func ApplyAutoMigrations(db *gorm.DB) error {
 		&files.File{},
 		&files.FileStatus{},
 		&files.FileType{},
+		&users.User{},
 	)
 }
 
