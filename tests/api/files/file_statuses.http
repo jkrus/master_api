@@ -1,0 +1,29 @@
+// Создать статус файла
+POST http://localhost:8080/api/file_statuses
+Accept: application/json
+
+{
+"Status":"first_ststus",
+"Description": "first_description"
+}
+
+###
+
+// Получить статус файла по Id
+GET http://localhost:8080/api/file_statuses/2
+Accept: application/json
+
+###
+
+PUT http://localhost:8080/api/file_statuses/2
+Accept: application/json
+
+{
+"Status":"first_ststus_updated",
+"Description":"first_description_updated"
+}
+
+###
+
+DELETE http://localhost:8080/api/file_statuses/1
+Accept: application/json

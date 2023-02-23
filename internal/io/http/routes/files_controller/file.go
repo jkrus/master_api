@@ -11,8 +11,8 @@ import (
 	"github.com/jkrus/master_api/pkg/errors"
 )
 
-func (f *FileController) Create(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	f.logger.Info("CREATE FILE")
+func (fc *FileController) Create(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	fc.logger.Info("CREATE FILE")
 
 	// TODO maximum file size
 	err := r.ParseMultipartForm(32 << 20)
@@ -20,7 +20,7 @@ func (f *FileController) Create(w http.ResponseWriter, r *http.Request) (interfa
 		return "", err
 	}
 
-	f.logger.Debug("decode create upload fileInfo dto")
+	fc.logger.Debug("decode create upload fileInfo dto")
 	orgID, err := utils.ExtractIdByFormRequest(r)
 	if err != nil {
 		return nil, errors.And(err, err_const.ErrBadRequest)
@@ -40,7 +40,7 @@ func (f *FileController) Create(w http.ResponseWriter, r *http.Request) (interfa
 		Reader: fileReader,
 	}
 
-	url, err := f.bl.File.File.Create(r.Context(), orgIDString, file.ToDTO())
+	url, err := fc.bl.File.File.Create(r.Context(), orgIDString, file.ToDTO())
 	if err != nil {
 		return "", err
 	}
@@ -51,10 +51,10 @@ func (f *FileController) Create(w http.ResponseWriter, r *http.Request) (interfa
 	}, nil
 }
 
-func (f *FileController) GetFile(w http.ResponseWriter, r *http.Request) ([]byte, string, error) {
-	f.logger.Info("GET FILE")
+func (fc *FileController) GetFile(w http.ResponseWriter, r *http.Request) ([]byte, string, error) {
+	fc.logger.Info("GET FILE")
 
-	f.logger.Debug("get orgID from URL")
+	fc.logger.Debug("get orgID from URL")
 	orgID, err := utils.ExtractIdFromParamsRequest(r)
 	if err != nil {
 		return nil, "", errors.And(err, err_const.ErrBadRequest)
@@ -63,12 +63,12 @@ func (f *FileController) GetFile(w http.ResponseWriter, r *http.Request) ([]byte
 
 	orgIDString = "orgid" + orgIDString
 
-	f.logger.Debug("get fileUUID from context")
+	fc.logger.Debug("get fileUUID from context")
 	fileUUID, err := utils.ExtractUUIDFromParamsRequest(r)
 	if err != nil {
 		return nil, "", errors.And(err, err_const.ErrBadRequest)
 	}
-	res, err := f.bl.File.File.GetFile(r.Context(), orgIDString, fileUUID)
+	res, err := fc.bl.File.File.GetFile(r.Context(), orgIDString, fileUUID)
 	if err != nil {
 		return nil, "", err
 	}
@@ -76,8 +76,8 @@ func (f *FileController) GetFile(w http.ResponseWriter, r *http.Request) ([]byte
 	return res.Bytes, res.Name, nil
 }
 
-func (f *FileController) DeleteFile(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	f.logger.Info("DELETE FILE")
+func (fc *FileController) DeleteFile(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	fc.logger.Info("DELETE FILE")
 
 	orgID, err := utils.ExtractIdFromParamsRequest(r)
 	if err != nil || orgID <= 0 {
@@ -87,13 +87,13 @@ func (f *FileController) DeleteFile(w http.ResponseWriter, r *http.Request) (int
 
 	orgIDString = "orgid" + orgIDString
 
-	f.logger.Debug("get fileUUID from context")
+	fc.logger.Debug("get fileUUID from context")
 	fileUUID, err := utils.ExtractUUIDFromParamsRequest(r)
 	if err != nil {
 		return nil, errors.And(err, err_const.ErrBadRequest)
 	}
 
-	err = f.bl.File.File.Delete(r.Context(), orgIDString, fileUUID)
+	err = fc.bl.File.File.Delete(r.Context(), orgIDString, fileUUID)
 	if err != nil {
 		return nil, err
 	}

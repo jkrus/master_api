@@ -24,8 +24,8 @@ type DictionaryUUIDModel struct {
 
 // DictionaryIDModel базовая модель для справочников которые отправляются на МУ и потенциально могут иметь размер более 100к элементов
 type DictionaryIDModel struct {
-	ID        uint           `gorm:"primarykey"` // Id записи
-	CreatedAt time.Time      `gorm:"index"`      // Дата создания
-	UpdatedAt time.Time      `gorm:"index"`      // Дата обновления
-	DeletedAt gorm.DeletedAt `gorm:"index"`      // Дата Удаления
+	ID        uint           `gorm:"primarykey"`                      // Id записи
+	CreatedAt time.Time      `gorm:"index;default:current_timestamp"` // Дата создания
+	UpdatedAt time.Time      `gorm:"index"`                           // Дата обновления
+	DeletedAt gorm.DeletedAt `gorm:"index"`                           // Дата Удаления
 }
