@@ -4,24 +4,14 @@ import (
 	"io"
 )
 
-type FileIN struct {
-	Uuid   string // Uuid файла
-	Name   string // Имя файла
-	Size   uint   // Размер файла
-	Reader io.Reader
-}
-
-type FileOUT struct {
-	Uuid  string // Uuid файла
-	Name  string // Имя файла
-	Size  uint   // Размер файла
-	Bytes []byte // Данные файла
-}
-
-type FileINHF struct {
-	Uuid         string
-	RedactorUuid string
-	Type         string
-	CheckSum     string
-	Status       int
+type File struct {
+	Uuid     string    // Uuid файла
+	UserUuid string    // Пользователь, изменивший файл
+	Name     string    // Название файла
+	CheckSum []byte    // Контрольная сумма файла
+	StatusId uint      // Статус файла
+	TypeId   uint      // Тип файла
+	Reader   io.Reader // Данные файла при загрузке
+	Data     []byte    // Данные файла при скачивании
+	Size     int64     // Размер файла
 }

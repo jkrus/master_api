@@ -30,10 +30,10 @@ func NewDBRepo(dbHandler *gorm.DB) *DBRepo {
 // ApplyAutoMigrations - регистрация авто миграции схемы бд из моделей
 func ApplyAutoMigrations(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&files.File{},
 		&files.FileStatus{},
 		&files.FileType{},
 		&users.User{},
+		&files.File{},
 	)
 }
 

@@ -7,15 +7,15 @@ import (
 )
 
 type FilesDBStore struct {
-	FileRepository       files.IFileRepository
-	FileStatusRepository files.FileStatusRepositoryI
-	FileTypeRepository   files.FileTypeRepositoryI
+	File       files.IFileRepository
+	FileStatus files.FileStatusRepositoryI
+	FileType   files.FileTypeRepositoryI
 }
 
 func NewFilesDBStore(dbHandler *gorm.DB) *FilesDBStore {
 	return &FilesDBStore{
-		FileRepository:       files.NewFileRepository(dbHandler),
-		FileStatusRepository: files.NewFileStatusRepository(dbHandler),
-		FileTypeRepository:   files.NewFileTypeRepository(dbHandler),
+		File:       files.NewFileRepository(dbHandler),
+		FileStatus: files.NewFileStatusRepository(dbHandler),
+		FileType:   files.NewFileTypeRepository(dbHandler),
 	}
 }

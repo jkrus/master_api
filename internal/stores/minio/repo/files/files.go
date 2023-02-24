@@ -15,7 +15,7 @@ import (
 
 type FileStoreI interface {
 	GetFile(ctx context.Context, bucketName, fileUUID string) (*minio.Object, *minio.ObjectInfo, error)
-	UploadFile(ctx context.Context, bucketName string, file *dto.FileIN) (string, error)
+	UploadFile(ctx context.Context, bucketName string, file *dto.File) error
 	DeleteFile(ctx context.Context, bucketName, fileUUID string) error
 }
 
@@ -31,11 +31,11 @@ type filesRepo struct {
 type File struct {
 	UUID string // Uuid файла
 	Name string // Имя файла
-	Size uint   // Размер файла
+	Size int64  // Размер файла
 
 }
 
-func (f *File) fromDTO(dtm *dto.FileIN) *File {
+func (f *File) fromDTO(dtm *dto.File) *File {
 	if dtm == nil {
 		return nil
 	}
@@ -47,12 +47,12 @@ func (f *File) fromDTO(dtm *dto.FileIN) *File {
 	}
 }
 
-func (f *File) toDTO() *dto.FileIN {
+func (f *File) toDTO() *dto.File {
 	if f == nil {
 		return nil
 	}
 
-	return &dto.FileIN{
+	return &dto.File{
 		Uuid: f.UUID,
 		Name: f.Name,
 		Size: f.Size,
@@ -76,18 +76,18 @@ func (f *filesRepo) GetFile(ctx context.Context, bucketName, fileUUID string) (*
 	return obj, &objectInfo, nil
 }
 
-func (f *filesRepo) UploadFile(ctx context.Context, bucketName string, file *dto.FileIN) (string, error) {
+func (f *filesRepo) UploadFile(ctx context.Context, bucketName string, file *dto.File) error {
 	exists, errBucketExists := f.minio.BucketExists(ctx, bucketName)
 	if errBucketExists != nil || !exists {
 		f.logger.Warn(fmt.Sprintf("no bucket %s. creating new one...", bucketName))
 		err := f.minio.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			return "", errors.Wrap(err, "failed to create new bucket")
+			return errors.Wrap(err, "failed to create new bucket")
 		}
 	}
 
 	f.logger.Debug(fmt.Sprintf("put new object %s to bucket %s", file.Name, bucketName))
-	_, err := f.minio.PutObject(ctx, bucketName, file.Uuid, file.Reader, int64(file.Size),
+	_, err := f.minio.PutObject(ctx, bucketName, file.Uuid, file.Reader, file.Size,
 		minio.PutObjectOptions{
 			UserMetadata: map[string]string{
 				"Name": file.Name,
@@ -95,10 +95,10 @@ func (f *filesRepo) UploadFile(ctx context.Context, bucketName string, file *dto
 			ContentType: "application/octet-stream",
 		})
 	if err != nil {
-		return "", errors.Wrap(err, "failed to upload file")
+		return errors.Wrap(err, "failed to upload file")
 	}
 
-	return f.generateFileURL(bucketName, file.Uuid), nil
+	return nil
 }
 
 func (f *filesRepo) DeleteFile(ctx context.Context, bucketName, fileUUID string) error {

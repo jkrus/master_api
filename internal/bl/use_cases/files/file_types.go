@@ -26,7 +26,7 @@ func NewFileTypeI(di internal.IAppDeps) FileTypesI {
 }
 
 func (fs *fileType) Create(ctx context.Context, data *dto.FileType) (*dto.FileType, error) {
-	created, err := fs.di.DBRepo().FileRepository.FileTypeRepository.Create(ctx, data)
+	created, err := fs.di.DBRepo().FileRepository.FileType.Create(ctx, data)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -35,7 +35,7 @@ func (fs *fileType) Create(ctx context.Context, data *dto.FileType) (*dto.FileTy
 }
 
 func (fs *fileType) GetById(ctx context.Context, fileTypeId uint) (*dto.FileType, error) {
-	result, err := fs.di.DBRepo().FileRepository.FileTypeRepository.GetById(ctx, fileTypeId)
+	result, err := fs.di.DBRepo().FileRepository.FileType.GetById(ctx, fileTypeId)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -44,7 +44,7 @@ func (fs *fileType) GetById(ctx context.Context, fileTypeId uint) (*dto.FileType
 }
 
 func (fs *fileType) Update(ctx context.Context, fileTypeId uint, data *dto.FileType) (*dto.FileType, error) {
-	updated, err := fs.di.DBRepo().FileRepository.FileTypeRepository.Update(ctx, fileTypeId, data)
+	updated, err := fs.di.DBRepo().FileRepository.FileType.Update(ctx, fileTypeId, data)
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}
@@ -53,5 +53,5 @@ func (fs *fileType) Update(ctx context.Context, fileTypeId uint, data *dto.FileT
 }
 
 func (fs *fileType) Delete(ctx context.Context, fileTypeId uint) error {
-	return fs.di.DBRepo().FileRepository.FileTypeRepository.Delete(ctx, fileTypeId)
+	return fs.di.DBRepo().FileRepository.FileType.Delete(ctx, fileTypeId)
 }

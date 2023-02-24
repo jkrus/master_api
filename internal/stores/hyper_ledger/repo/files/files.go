@@ -14,9 +14,9 @@ import (
 )
 
 type FileContractI interface {
-	Create(fileUuid string, file dto.FileINHF) error
-	Update(fileUuid string, file dto.FileINHF) error
-	GetByUuid(fileUuid string) (*dto.FileINHF, error)
+	Create(fileUuid string, file dto.File) error
+	Update(fileUuid string, file dto.File) error
+	GetByUuid(fileUuid string) (*dto.File, error)
 }
 
 func NewFileContractI(config *config.Config, logger *zap.Logger, client *client.Network) FileContractI {
@@ -41,8 +41,8 @@ type File struct {
 }
 
 // Create adds a new key with value to the world state
-func (sc *fileContract) Create(fileUuid string, file dto.FileINHF) error {
-	_, err := sc.chainCode.SubmitTransaction("CreateFile", fileUuid, file.RedactorUuid, file.Type, file.CheckSum, strconv.Itoa(file.Status))
+func (sc *fileContract) Create(fileUuid string, file dto.File) error {
+	_, err := sc.chainCode.SubmitTransaction("CreateFile", fileUuid, file.UserUuid, strconv.Itoa(int(file.TypeId)), string(file.CheckSum), strconv.Itoa(int(file.StatusId)))
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (sc *fileContract) Create(fileUuid string, file dto.FileINHF) error {
 }
 
 // Update changes the value with key in the world state
-func (sc *fileContract) Update(fileUuid string, file dto.FileINHF) error {
+func (sc *fileContract) Update(fileUuid string, file dto.File) error {
 	submitResult, commit, err := sc.chainCode.SubmitAsync("TransferFile", client.WithArguments(fileUuid, "Mark"))
 	if err != nil {
 		return err
@@ -69,12 +69,12 @@ func (sc *fileContract) Update(fileUuid string, file dto.FileINHF) error {
 }
 
 // GetByUuid returns the file at uuid in the world state
-func (sc *fileContract) GetByUuid(fileUuid string) (*dto.FileINHF, error) {
+func (sc *fileContract) GetByUuid(fileUuid string) (*dto.File, error) {
 	evaluateResult, err := sc.chainCode.EvaluateTransaction("ReadFile", fileUuid)
 	if err != nil {
 		return nil, err
 	}
-	result := &dto.FileINHF{}
+	result := &dto.File{}
 	err = json.Unmarshal(evaluateResult, &result)
 	if err != nil {
 		return nil, err

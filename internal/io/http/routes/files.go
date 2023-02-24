@@ -11,8 +11,9 @@ func (r router) initFileRoutes(controller *files_controller.FileController) {
 	sr := r.router.PathPrefix("/api").Subrouter().StrictSlash(true)
 
 	sr.HandleFunc("/file/upload", wrappers.WrapJSONHandler(controller.Create)).Methods(http.MethodPost)
-	sr.HandleFunc("/file/download", wrappers.WrapXLSHandler(controller.GetFile)).Methods(http.MethodGet)
-	sr.HandleFunc("/file/delete", wrappers.WrapJSONHandler(controller.DeleteFile)).Methods(http.MethodDelete)
+	sr.HandleFunc("/file/download/{uuid}", wrappers.WrapXLSHandler(controller.GetFile)).Methods(http.MethodGet)
+	sr.HandleFunc("/file/delete/{uuid}", wrappers.WrapJSONHandler(controller.DeleteFile)).Methods(http.MethodDelete)
+	sr.HandleFunc("/file/{uuid}", wrappers.WrapJSONHandler(controller.UpdateFile)).Methods(http.MethodPut)
 
 	/* FileStatuses */
 

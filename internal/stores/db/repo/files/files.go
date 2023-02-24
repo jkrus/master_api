@@ -4,47 +4,56 @@ import (
 	"context"
 
 	"github.com/jkrus/master_api/internal/bl/use_cases/files/dto"
+	"github.com/jkrus/master_api/internal/common/err_const"
 	"github.com/jkrus/master_api/internal/stores/db/repo/base"
 
 	"gorm.io/gorm"
 )
 
-// File Уведомление
+// File Файл
 type File struct {
-	base.UuidModel // Uuid модель
-
-	Name string
-	Size uint
+	base.UuidModel        // Uuid модель
+	UserUuid       string `gorm:"foreignKey:users TYPE:uuid"` // Пользователь, изменивший файл
+	Name           string // Имя файла
+	CheckSum       []byte // Контрольная сумма файла
+	FileStatusID   uint   `gorm:"TYPE:integer references file_statuses"` // Статус файла
+	FileTypeId     uint   `gorm:"TYPE:integer REFERENCES file_types"`    // Тип файла
 }
 
-func (f *File) toDTO() *dto.FileOUT {
+func (f *File) toDTO() *dto.File {
 	if f == nil {
 		return nil
 	}
 
-	return &dto.FileOUT{
-		Uuid: f.Uuid,
-		Name: f.Name,
-		Size: f.Size,
+	return &dto.File{
+		Uuid:     f.Uuid,
+		UserUuid: f.UserUuid,
+		CheckSum: f.CheckSum,
+		StatusId: f.FileStatusID,
+		TypeId:   f.FileTypeId,
 	}
 }
 
-func (f *File) fromDTO(v *dto.FileIN) *File {
+func (f *File) fromDTO(v *dto.File) *File {
 	if v == nil {
 		return nil
 	}
 
 	return &File{
-		UuidModel: base.UuidModel{Uuid: v.Uuid},
-		Name:      v.Name,
-		Size:      v.Size,
+		UuidModel:    base.UuidModel{Uuid: v.Uuid},
+		UserUuid:     v.UserUuid,
+		Name:         v.Name,
+		CheckSum:     v.CheckSum,
+		FileStatusID: v.StatusId,
+		FileTypeId:   v.TypeId,
 	}
 }
 
 type IFileRepository interface {
-	GetByUuid(ctx context.Context, uuid string) (*dto.FileOUT, error)
-	Create(ctx context.Context, dtm *dto.FileIN) (*dto.FileOUT, error)
+	Create(ctx context.Context, data *dto.File) (*dto.File, error)
+	GetById(ctx context.Context, fileUuid string) (*dto.File, error)
 	Delete(ctx context.Context, uuid string) error
+	Update(ctx context.Context, uuid string, data *dto.File) (*dto.File, error)
 
 	WithTx(tx *gorm.DB) IFileRepository
 }
@@ -53,25 +62,52 @@ type fileRepository struct {
 	db *gorm.DB
 }
 
-func (f *fileRepository) GetByUuid(ctx context.Context, uuid string) (*dto.FileOUT, error) {
-	// TODO implement me
-	panic("implement me")
+func (f *fileRepository) Create(ctx context.Context, data *dto.File) (*dto.File, error) {
+	result := (&File{}).fromDTO(data)
+
+	err := f.db.WithContext(ctx).Save(result).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return result.toDTO(), nil
 }
 
-func (f *fileRepository) Create(ctx context.Context, dtm *dto.FileIN) (*dto.FileOUT, error) {
-	// TODO implement me
-	panic("implement me")
+func (f *fileRepository) GetById(ctx context.Context, fileUuid string) (*dto.File, error) {
+	result := &File{}
+
+	err := f.db.WithContext(ctx).Find(&result, "uuid = ?", fileUuid).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return result.toDTO(), nil
+}
+
+func (f *fileRepository) Update(ctx context.Context, uuid string, data *dto.File) (*dto.File, error) {
+	update := &File{}
+	update.fromDTO(data)
+	update.Uuid = uuid
+
+	tx := f.db.WithContext(ctx).Save(update)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return nil, err_const.ErrDatabaseRecordNotFound
+	}
+
+	return update.toDTO(), nil
 }
 
 func (f *fileRepository) Delete(ctx context.Context, uuid string) error {
-	// TODO implement me
-	panic("implement me")
+	return f.db.WithContext(ctx).Delete(&FileType{}, uuid).Error
 }
 
 func NewFileRepository(dbHandler *gorm.DB) IFileRepository {
 	return &fileRepository{db: dbHandler}
 }
 
-func (n *fileRepository) WithTx(tx *gorm.DB) IFileRepository {
+func (f *fileRepository) WithTx(tx *gorm.DB) IFileRepository {
 	return &fileRepository{db: tx}
 }
