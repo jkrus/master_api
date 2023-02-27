@@ -40,8 +40,8 @@ type Config struct {
 	DBName           string `envconfig:"DB_NAME" default:"postgres"`
 	DBSSLMode        string `envconfig:"DB_SSL_MODE" default:"disable" validate:"oneof=disable enable"`
 	SQLSlowThreshold int    `envconfig:"SQL_SLOW_THRESHOLD" default:"600"`
-	TraceSQLCommands bool   `envconfig:"TRACE_SQL_COMMANDS" default:"false"`
-	AutoMigrate      bool   `envconfig:"AUTO_MIGRATE" default:"true"`
+	TraceSQLCommands bool   `envconfig:"TRACE_SQL_COMMANDS" default:"true"`
+	AutoMigrate      bool   `envconfig:"AUTO_MIGRATE" default:"false"`
 
 	// Hyper Ledger
 

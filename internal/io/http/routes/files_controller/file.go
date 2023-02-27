@@ -42,7 +42,7 @@ func (fc *FileController) Create(w http.ResponseWriter, r *http.Request) (interf
 	if !ok || len(userUuid) == 0 {
 		return "", err_const.ErrBadRequest
 	}
-	statusIdStr, ok := r.MultipartForm.Value["StatusId"]
+	statusIdStr, ok := r.MultipartForm.Value["FileStatusId"]
 	if !ok || len(statusIdStr) == 0 {
 		return "", err_const.ErrBadRequest
 	}

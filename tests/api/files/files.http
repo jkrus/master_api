@@ -5,3 +5,15 @@ Accept: application/json
 
 DELETE http://localhost:8080/api/file/delete?id=3&uuid=5dd10518-a5f2-11ed-ba24-5405db6db61d
 Accept: application/json
+
+###
+
+PUT http://localhost:8080/api/file/5af78f89-b4ed-11ed-aa89-5405db6db61d
+Accept: application/json
+
+{
+"UserUuid":"706ddcd2-65fa-47fa-8c2b-09a3852dba99",
+"Name":"vostrebovannye-it-special.jpg",
+"StatusId":2,
+"TypeId":1
+}

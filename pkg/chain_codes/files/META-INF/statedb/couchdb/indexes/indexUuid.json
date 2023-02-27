@@ -1,0 +1,6 @@
+{"index":
+{"fields":["uuid"]},
+  "ddoc":"indexUuidDoc",
+  "name":"indexUuid",
+  "type":"json"
+}

@@ -1,6 +1,7 @@
 package files
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -14,9 +15,9 @@ import (
 )
 
 type FileContractI interface {
-	Create(fileUuid string, file dto.File) error
-	Update(fileUuid string, file dto.File) error
-	GetByUuid(fileUuid string) (*dto.File, error)
+	Create(fileUuid string, file *dto.File) error
+	Update(fileUuid string, file *dto.File) error
+	GetByUuid(fileUuid string) (*dto.FileHFDTO, error)
 }
 
 func NewFileContractI(config *config.Config, logger *zap.Logger, client *client.Network) FileContractI {
@@ -41,8 +42,10 @@ type File struct {
 }
 
 // Create adds a new key with value to the world state
-func (sc *fileContract) Create(fileUuid string, file dto.File) error {
-	_, err := sc.chainCode.SubmitTransaction("CreateFile", fileUuid, file.UserUuid, strconv.Itoa(int(file.TypeId)), string(file.CheckSum), strconv.Itoa(int(file.StatusId)))
+func (sc *fileContract) Create(fileUuid string, file *dto.File) error {
+	checkSum := base64.StdEncoding.EncodeToString(file.CheckSum)
+	fmt.Println(checkSum)
+	_, err := sc.chainCode.SubmitTransaction("CreateFile", fileUuid, strconv.Itoa(int(file.TypeId)), checkSum, file.UserUuid, file.UpdatedAt.String(), strconv.Itoa(int(file.StatusId)))
 	if err != nil {
 		return err
 	}
@@ -51,8 +54,8 @@ func (sc *fileContract) Create(fileUuid string, file dto.File) error {
 }
 
 // Update changes the value with key in the world state
-func (sc *fileContract) Update(fileUuid string, file dto.File) error {
-	submitResult, commit, err := sc.chainCode.SubmitAsync("TransferFile", client.WithArguments(fileUuid, "Mark"))
+func (sc *fileContract) Update(fileUuid string, file *dto.File) error {
+	submitResult, commit, err := sc.chainCode.SubmitAsync("UpdateFile", client.WithArguments(fileUuid, file.UserUuid, file.UpdatedAt.String(), strconv.Itoa(int(file.StatusId))))
 	if err != nil {
 		return err
 	}
@@ -69,12 +72,12 @@ func (sc *fileContract) Update(fileUuid string, file dto.File) error {
 }
 
 // GetByUuid returns the file at uuid in the world state
-func (sc *fileContract) GetByUuid(fileUuid string) (*dto.File, error) {
+func (sc *fileContract) GetByUuid(fileUuid string) (*dto.FileHFDTO, error) {
 	evaluateResult, err := sc.chainCode.EvaluateTransaction("ReadFile", fileUuid)
 	if err != nil {
 		return nil, err
 	}
-	result := &dto.File{}
+	result := &dto.FileHFDTO{}
 	err = json.Unmarshal(evaluateResult, &result)
 	if err != nil {
 		return nil, err

@@ -2,20 +2,23 @@ package models
 
 import (
 	"io"
+	"time"
 
 	"github.com/jkrus/master_api/internal/bl/use_cases/files/dto"
 )
 
 type File struct {
-	Uuid     string    // Uuid файла
-	UserUuid string    // Пользователь, изменивший файл
-	Name     string    // Название файла
-	CheckSum []byte    `json:"-"` // Контрольная сумма файла
-	StatusId uint      // Статус файла
-	TypeId   uint      // Тип файла
-	Reader   io.Reader `json:"-"` // Данные файла при загрузке
-	Data     []byte    `json:"-"` // Данные файла при скачивании
-	Size     int64     `json:"-"` // Размер файла
+	Uuid      string     // Uuid файла
+	UserUuid  string     // Пользователь, изменивший файл
+	Name      string     // Название файла
+	CheckSum  []byte     `json:"-"` // Контрольная сумма файла
+	StatusId  uint       // Статус файла
+	TypeId    uint       // Тип файла
+	Reader    io.Reader  `json:"-"` // Данные файла при загрузке
+	Data      []byte     `json:"-"` // Данные файла при скачивании
+	Size      int64      `json:"-"` // Размер файла
+	CreatedAt *time.Time // Дата создания файла
+	UpdatedAt *time.Time // Дата обновления файла
 }
 
 func (f *File) FromDTO(model *dto.File) *File {
@@ -24,15 +27,17 @@ func (f *File) FromDTO(model *dto.File) *File {
 	}
 
 	return &File{
-		Uuid:     model.Uuid,
-		UserUuid: model.UserUuid,
-		Name:     model.Name,
-		CheckSum: model.CheckSum,
-		StatusId: model.StatusId,
-		TypeId:   model.TypeId,
-		Reader:   model.Reader,
-		Data:     model.Data,
-		Size:     f.Size,
+		Uuid:      model.Uuid,
+		UserUuid:  model.UserUuid,
+		Name:      model.Name,
+		CheckSum:  model.CheckSum,
+		StatusId:  model.StatusId,
+		TypeId:    model.TypeId,
+		Reader:    model.Reader,
+		Data:      model.Data,
+		Size:      model.Size,
+		CreatedAt: model.CreatedAt,
+		UpdatedAt: model.UpdatedAt,
 	}
 }
 

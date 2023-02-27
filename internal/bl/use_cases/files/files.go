@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto"
+	"encoding/base64"
 	"io"
 
 	"github.com/google/uuid"
@@ -59,6 +60,16 @@ func (f *files) Create(ctx context.Context, bucketName string, file *dto.File) (
 			return err
 		}
 
+		if result.UpdatedAt == nil {
+			return errors.Newf("UpdatedAt can not be nil, %v", result)
+		}
+
+		file.UpdatedAt = result.UpdatedAt
+		err = f.di.HyperLagerStore().Files.FileStore.Create(file.Uuid, file)
+		if err != nil {
+			return err
+		}
+
 		err = f.di.MinioRepo().Files.FileStore.UploadFile(ctx, bucketName, file)
 		if err != nil {
 			return err
@@ -76,7 +87,7 @@ func (f *files) Create(ctx context.Context, bucketName string, file *dto.File) (
 
 func (f *files) Delete(ctx context.Context, bucketName, fileUUID string) error {
 	err := f.di.DBRepo().WithTransaction(func(tx *gorm.DB) error {
-		err := f.di.DBRepo().FileRepository.File.Delete(ctx, fileUUID)
+		err := f.di.DBRepo().FileRepository.File.WithTx(tx).Delete(ctx, fileUUID)
 		if err != nil {
 			return err
 		}
@@ -111,11 +122,44 @@ func (f *files) DownloadFile(ctx context.Context, bucketName, fileUUID string) (
 		Name: objectInfo.UserMetadata["Name"],
 		Data: buffer,
 	}
+
+	hfFile, err := f.di.HyperLagerStore().Files.FileStore.GetByUuid(fileUUID)
+	if err != nil {
+		return nil, errors.Ctx().Just(err)
+	}
+
+	hash := crypto.SHA256.New()
+	hash.Write(buffer)
+	sum := hash.Sum(nil)
+
+	checkSum, err := base64.StdEncoding.DecodeString(hfFile.CheckSum)
+	if err != nil {
+		return nil, errors.Ctx().Just(err)
+	}
+
+	if string(sum) != string(checkSum) {
+		return nil, errors.Ctx().Newf("checkSum is not equal, file checkSum:%v, ledger checkSum: %v", sum, checkSum)
+	}
+
 	return res, nil
 }
 
 func (f *files) Update(ctx context.Context, fileUuid string, data *dto.File) (*dto.File, error) {
-	updated, err := f.di.DBRepo().FileRepository.File.Update(ctx, fileUuid, data)
+	updated := &dto.File{}
+	var err error
+	err = f.di.DBRepo().WithTransaction(func(tx *gorm.DB) error {
+		updated, err = f.di.DBRepo().FileRepository.File.Update(ctx, fileUuid, data)
+		if err != nil {
+			return err
+		}
+
+		err = f.di.HyperLagerStore().Files.FileStore.Update(fileUuid, updated)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		return nil, errors.Ctx().Just(err)
 	}

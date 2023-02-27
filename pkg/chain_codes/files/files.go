@@ -8,8 +8,8 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// FilesSmartContract provides functions for managing an File
-type FilesSmartContract struct {
+// FileSmartContract provides functions for managing an File
+type FileSmartContract struct {
 	contractapi.Contract
 }
 
@@ -20,13 +20,24 @@ type File struct {
 	Type         string
 	CheckSum     string
 	Status       int
+	History      []History
+}
+
+type History struct {
+	RedactorUuid string
+	Status       int
+	UpdatedAt    string
 }
 
 // InitLedger adds a base set of files to the ledger
-func (s *FilesSmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
+func (s *FileSmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	files := []File{
-		{Uuid: "file1", Type: "type1", CheckSum: "CheckSum1", RedactorUuid: "RedactorUuid1", Status: 1},
-		{Uuid: "file2", Type: "type2", CheckSum: "CheckSum2", RedactorUuid: "RedactorUuid2", Status: 2},
+		{Uuid: "file1", Type: "type1", CheckSum: "CheckSum1", RedactorUuid: "RedactorUuid1", Status: 1, History: []History{{
+			RedactorUuid: "RedactorUuid1", Status: 1,
+		}}},
+		{Uuid: "file2", Type: "type2", CheckSum: "CheckSum2", RedactorUuid: "RedactorUuid2", Status: 2, History: []History{{
+			RedactorUuid: "RedactorUuid2", Status: 2,
+		}}},
 	}
 
 	for _, file := range files {
@@ -45,7 +56,7 @@ func (s *FilesSmartContract) InitLedger(ctx contractapi.TransactionContextInterf
 }
 
 // CreateFile issues a new file to the world state with given details.
-func (s *FilesSmartContract) CreateFile(ctx contractapi.TransactionContextInterface, fileUuid, fileType, checkSum, redactorUuid string, status int) error {
+func (s *FileSmartContract) CreateFile(ctx contractapi.TransactionContextInterface, fileUuid, fileType, checkSum, redactorUuid, updatedAt string, status int) error {
 	exists, err := s.FileExists(ctx, fileUuid)
 	if err != nil {
 		return err
@@ -60,6 +71,11 @@ func (s *FilesSmartContract) CreateFile(ctx contractapi.TransactionContextInterf
 		CheckSum:     checkSum,
 		RedactorUuid: redactorUuid,
 		Status:       status,
+		History: []History{{
+			RedactorUuid: redactorUuid,
+			Status:       status,
+			UpdatedAt:    updatedAt,
+		}},
 	}
 	fileJSON, err := json.Marshal(file)
 	if err != nil {
@@ -70,7 +86,7 @@ func (s *FilesSmartContract) CreateFile(ctx contractapi.TransactionContextInterf
 }
 
 // ReadFile returns the file stored in the world state with given id.
-func (s *FilesSmartContract) ReadFile(ctx contractapi.TransactionContextInterface, fileUuid string) (*File, error) {
+func (s *FileSmartContract) ReadFile(ctx contractapi.TransactionContextInterface, fileUuid string) (*File, error) {
 	fileJSON, err := ctx.GetStub().GetState(fileUuid)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read from world state: %v", err)
@@ -89,7 +105,7 @@ func (s *FilesSmartContract) ReadFile(ctx contractapi.TransactionContextInterfac
 }
 
 // UpdateFile updates an existing file in the world state with provided parameters.
-func (s *FilesSmartContract) UpdateFile(ctx contractapi.TransactionContextInterface, fileUuid, fileType, checkSum, owner string, status int) error {
+func (s *FileSmartContract) UpdateFile(ctx contractapi.TransactionContextInterface, fileUuid, redactorUuid, updatedAt string, status int) error {
 	exists, err := s.FileExists(ctx, fileUuid)
 	if err != nil {
 		return err
@@ -98,14 +114,20 @@ func (s *FilesSmartContract) UpdateFile(ctx contractapi.TransactionContextInterf
 		return fmt.Errorf("the file %s does not exist", fileUuid)
 	}
 
-	// overwriting original file with new file
-	file := File{
-		Uuid:         fileUuid,
-		Type:         fileType,
-		CheckSum:     checkSum,
-		RedactorUuid: owner,
-		Status:       status,
+	file, err := s.ReadFile(ctx, fileUuid)
+	if err != nil {
+		return fmt.Errorf("the file %s does not read", fileUuid)
 	}
+
+	// overwriting original file with new file
+	file.RedactorUuid = redactorUuid
+	file.Status = status
+	file.History = append(file.History, History{
+		RedactorUuid: redactorUuid,
+		Status:       status,
+		UpdatedAt:    updatedAt,
+	})
+
 	fileJSON, err := json.Marshal(file)
 	if err != nil {
 		return err
@@ -115,7 +137,7 @@ func (s *FilesSmartContract) UpdateFile(ctx contractapi.TransactionContextInterf
 }
 
 // DeleteFile deletes an given file from the world state.
-func (s *FilesSmartContract) DeleteFile(ctx contractapi.TransactionContextInterface, fileUuid string) error {
+func (s *FileSmartContract) DeleteFile(ctx contractapi.TransactionContextInterface, fileUuid string) error {
 	exists, err := s.FileExists(ctx, fileUuid)
 	if err != nil {
 		return err
@@ -128,7 +150,7 @@ func (s *FilesSmartContract) DeleteFile(ctx contractapi.TransactionContextInterf
 }
 
 // FileExists returns true when file with given Uuid exists in world state
-func (s *FilesSmartContract) FileExists(ctx contractapi.TransactionContextInterface, fileUuid string) (bool, error) {
+func (s *FileSmartContract) FileExists(ctx contractapi.TransactionContextInterface, fileUuid string) (bool, error) {
 	fileJSON, err := ctx.GetStub().GetState(fileUuid)
 	if err != nil {
 		return false, fmt.Errorf("failed to read from world state: %v", err)
@@ -138,7 +160,7 @@ func (s *FilesSmartContract) FileExists(ctx contractapi.TransactionContextInterf
 }
 
 // GetAllFiles returns all files found in world state
-func (s *FilesSmartContract) GetAllFiles(ctx contractapi.TransactionContextInterface) ([]*File, error) {
+func (s *FileSmartContract) GetAllFiles(ctx contractapi.TransactionContextInterface) ([]*File, error) {
 	// range query with empty string for startKey and endKey does an
 	// open-ended query of all files in the chaincode namespace.
 	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
@@ -166,7 +188,7 @@ func (s *FilesSmartContract) GetAllFiles(ctx contractapi.TransactionContextInter
 }
 
 func main() {
-	fileChaincode, err := contractapi.NewChaincode(&FilesSmartContract{})
+	fileChaincode, err := contractapi.NewChaincode(&FileSmartContract{})
 	if err != nil {
 		log.Panicf("Error creating file-transfer-basic chaincode: %v", err)
 	}

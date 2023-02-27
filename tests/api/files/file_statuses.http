@@ -3,8 +3,8 @@ POST http://localhost:8080/api/file_statuses
 Accept: application/json
 
 {
-"Status":"first_ststus",
-"Description": "first_description"
+"Status":"first_ststus_2",
+"Description": "first_description_2"
 }
 
 ###

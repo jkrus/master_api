@@ -26,27 +26,28 @@ func (f *File) toDTO() *dto.File {
 	}
 
 	return &dto.File{
-		Uuid:     f.Uuid,
-		UserUuid: f.UserUuid,
-		CheckSum: f.CheckSum,
-		StatusId: f.FileStatusID,
-		TypeId:   f.FileTypeId,
+		Uuid:      f.Uuid,
+		UserUuid:  f.UserUuid,
+		CheckSum:  f.CheckSum,
+		StatusId:  f.FileStatusID,
+		TypeId:    f.FileTypeId,
+		CreatedAt: &f.CreatedAt,
+		UpdatedAt: &f.UpdatedAt,
 	}
 }
 
-func (f *File) fromDTO(v *dto.File) *File {
+func (f *File) fromDTO(v *dto.File) {
 	if v == nil {
-		return nil
+		return
 	}
 
-	return &File{
-		UuidModel:    base.UuidModel{Uuid: v.Uuid},
-		UserUuid:     v.UserUuid,
-		Name:         v.Name,
-		CheckSum:     v.CheckSum,
-		FileStatusID: v.StatusId,
-		FileTypeId:   v.TypeId,
-	}
+	f.UuidModel.Uuid = v.Uuid
+	f.UserUuid = v.UserUuid
+	f.Name = v.Name
+	f.CheckSum = v.CheckSum
+	f.FileStatusID = v.StatusId
+	f.FileTypeId = v.TypeId
+
 }
 
 type IFileRepository interface {
@@ -63,7 +64,8 @@ type fileRepository struct {
 }
 
 func (f *fileRepository) Create(ctx context.Context, data *dto.File) (*dto.File, error) {
-	result := (&File{}).fromDTO(data)
+	result := &File{}
+	result.fromDTO(data)
 
 	err := f.db.WithContext(ctx).Save(result).Error
 	if err != nil {
